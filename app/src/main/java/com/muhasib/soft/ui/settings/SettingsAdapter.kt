@@ -23,7 +23,7 @@ class SettingsAdapter : RecyclerView.Adapter<SettingsAdapter.VH>() {
         val it = data[position]
         holder.b.imgIcon.setImageResource(it.icon)
         holder.b.txtTitle.setText(it.title)
-        holder.itemView.setOnClickListener { onClick?.invoke(it.tag) }
+        holder.itemView.setOnClickListener { _ -> onClick?.invoke(it.tag) }
     }
 
     override fun getItemCount(): Int = data.size

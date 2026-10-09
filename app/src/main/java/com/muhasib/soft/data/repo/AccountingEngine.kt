@@ -105,7 +105,7 @@ object AccountingEngine {
         items: List<DocumentItemEntity>
     ): List<JournalLineEntity> {
         val lines = mutableListOf<JournalLineEntity>()
-        fun line(acc: Long, dr: Double, cr: Double) = JournalLineEntity(
+        suspend fun line(acc: Long, dr: Double, cr: Double) = JournalLineEntity(
             docId = doc.id, accountId = acc, accountName = name(db, acc),
             currencyId = doc.currencyId, debit = dr, credit = cr
         )

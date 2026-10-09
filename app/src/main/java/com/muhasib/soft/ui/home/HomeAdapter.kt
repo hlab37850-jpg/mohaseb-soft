@@ -36,7 +36,7 @@ class HomeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         if (holder is HeaderVH) {
             holder.b.txtTitle.text = row.title
             holder.itemView.setOnClickListener { onHeader?.invoke(row.key) }
-        } else {
+        } else if (holder is ChildVH) {
             holder.b.txtChild.text = row.title
             holder.itemView.setOnClickListener { onChild?.invoke(row.key) }
         }

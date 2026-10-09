@@ -289,7 +289,8 @@ class ListActivity : AppCompatActivity() {
                 val mv = db.documentItemDao().movement(0, fromD, toD).filter { it.docType == DocType.SALE }
                 mv.groupBy { it.itemName }.forEach { (name, rs) ->
                     val rev = rs.sumOf { it.total }
-                    val cost = rs.sumOf { it.qty * it.cost }
+                    val unitCost = db.itemDao().all().firstOrNull { x -> x.name == name }?.unitCost ?: 0.0
+                    val cost = rs.sumOf { r -> r.qty * unitCost }
                     out.add(listOf(name, fmt(rev - cost), fmt(rev)))
                     footer += rev - cost
                 }
@@ -394,7 +395,7 @@ class ListActivity : AppCompatActivity() {
                     AlertDialog.Builder(this@ListActivity).setMessage(R.string.confirm_delete)
                         .setPositiveButton(R.string.yes) { _, _ ->
                             lifecycleScope.launch(Dispatchers.IO) {
-                                db.itemPriceDao().delete(com.muhasib.soft.data.db.ItemPriceEntity(p.id, p.itemId, p.currencyId, p.price, p.cost, p.date))
+                                db.itemPriceDao().delete(com.muhasib.soft.data.db.ItemPriceEntity(p.id, p.itemId, 1L, p.price, p.cost, p.date))
                                 withContext(Dispatchers.Main) { load() }
                             }
                         }.setNegativeButton(R.string.no, null).show()
@@ -612,13 +613,13 @@ class ListActivity : AppCompatActivity() {
                         val number = App.instance.repo.nextNumber(t)
                         val lines = if (isReceipt) {
                             listOf(
-                                JournalLineEntity(accountId = accountId, accountName = accName, currencyId = 1L, debit = 0.0, credit = amt),
-                                JournalLineEntity(accountId = cashAcc, accountName = cashName, currencyId = 1L, debit = amt, credit = 0.0)
+                                JournalLineEntity(docId = 0L, accountId = accountId, accountName = accName, currencyId = 1L, debit = 0.0, credit = amt),
+                                JournalLineEntity(docId = 0L, accountId = cashAcc, accountName = cashName, currencyId = 1L, debit = amt, credit = 0.0)
                             )
                         } else {
                             listOf(
-                                JournalLineEntity(accountId = accountId, accountName = accName, currencyId = 1L, debit = amt, credit = 0.0),
-                                JournalLineEntity(accountId = cashAcc, accountName = cashName, currencyId = 1L, debit = 0.0, credit = amt)
+                                JournalLineEntity(docId = 0L, accountId = accountId, accountName = accName, currencyId = 1L, debit = amt, credit = 0.0),
+                                JournalLineEntity(docId = 0L, accountId = cashAcc, accountName = cashName, currencyId = 1L, debit = 0.0, credit = amt)
                             )
                         }
                         val doc = DocumentEntity(type = t, number = number, date = v["date"] ?: todayStr(), partyAccountId = accountId, partyName = accName, cashboxId = box.id, currencyId = 1L, notes = v["note"] ?: "", total = amt, net = amt, remaining = 0.0)

@@ -105,13 +105,13 @@ class DocumentActivity : AppCompatActivity() {
         }
 
         b.recyclerItems.layoutManager = LinearLayoutManager(this)
-        b.recyclerItems.adapter = itemsAdapter
-        b.recyclerItems.adapter = journalAdapter
+        b.recyclerItems.adapter = if (isJournalFamily) journalAdapter else itemsAdapter
         itemsAdapter.onDelete = { it -> items.remove(it); refresh() }
         journalAdapter.onDelete = { it -> lines.remove(it); refresh() }
 
         b.txtDate.setOnClickListener { pickDate() }
         b.footerBox.setOnClickListener { discountDialog() }
+        b.btnClearItem.setOnClickListener { b.editItemInput.setText("") }
         b.btnAddItem.setOnClickListener {
             if (isJournalFamily) journalRowDialog() else addItemFromInput()
         }
@@ -239,7 +239,7 @@ class DocumentActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf<String>())
         popup.setAdapter(adapter)
         popup.anchorView = b.editItemInput
-        popup.setOnItemClickListener { _, pos, _, _ ->
+        popup.setOnItemClickListener { _, _, pos, _ ->
             val name = adapter.getItem(pos) ?: return@setOnItemClickListener
             b.editItemInput.setText(name)
             selectedItemId = itemCache.firstOrNull { it.name == name }?.id ?: 0L
@@ -270,7 +270,7 @@ class DocumentActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf<String>())
         popup.setAdapter(adapter)
         popup.anchorView = b.editParty
-        popup.setOnItemClickListener { _, pos, _, _ ->
+        popup.setOnItemClickListener { _, _, pos, _ ->
             val name = adapter.getItem(pos) ?: return@setOnItemClickListener
             b.editParty.setText(name)
             partyAccountId = accountCache.firstOrNull { it.name == name }?.id ?: 0L
@@ -568,7 +568,7 @@ class DocumentActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun buildJournalLines(): List<JournalLineEntity> {
+    private suspend fun buildJournalLines(): List<JournalLineEntity> {
         val cur = currentCurrencyId()
         if (docType == DocType.RECEIPT || docType == DocType.PAYMENT) {
             val sum = lines.sumOf { it.debit + it.credit }

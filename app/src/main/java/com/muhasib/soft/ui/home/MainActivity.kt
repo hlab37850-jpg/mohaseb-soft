@@ -23,6 +23,7 @@ import com.muhasib.soft.ui.settings.SettingsHomeActivity
 import com.muhasib.soft.util.BackupUtil
 import com.muhasib.soft.util.nowFullStr
 import com.muhasib.soft.util.todayStr
+import com.muhasib.soft.util.shareText
 import com.muhasib.soft.util.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -102,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         b.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_bell -> route("LIST:REMINDERS")
-                R.id.action_share -> com.muhasib.soft.util.shareText(this, getString(R.string.app_name))
+                R.id.action_share -> shareText(getString(R.string.app_name))
             }
             true
         }

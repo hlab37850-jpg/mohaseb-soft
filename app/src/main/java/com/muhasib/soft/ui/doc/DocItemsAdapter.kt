@@ -28,7 +28,7 @@ class DocItemsAdapter : RecyclerView.Adapter<DocItemsAdapter.VH>() {
         holder.b.txtQty.text = fmt(it.qty)
         holder.b.txtPrice.text = fmt(it.price)
         holder.b.txtTotal.text = fmt(it.total)
-        holder.b.btnDel.setOnClickListener { onDelete?.invoke(it) }
+        holder.b.btnDel.setOnClickListener { _ -> onDelete?.invoke(it) }
     }
 
     override fun getItemCount(): Int = data.size
@@ -55,7 +55,7 @@ class JournalRowsAdapter : RecyclerView.Adapter<JournalRowsAdapter.VH>() {
         holder.b.txtDebit.text = fmt(it.debit)
         holder.b.txtCredit.text = fmt(it.credit)
         holder.b.txtNote.text = it.note
-        holder.b.btnDel.setOnClickListener { onDelete?.invoke(it) }
+        holder.b.btnDel.setOnClickListener { _ -> onDelete?.invoke(it) }
     }
 
     override fun getItemCount(): Int = data.size
